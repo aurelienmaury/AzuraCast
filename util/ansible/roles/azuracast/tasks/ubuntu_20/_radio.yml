@@ -2,25 +2,6 @@
 - name: Build Icecast
   include_tasks: radio/icecast.yml
 
-- name: Install Liquidsoap (Focal)
+- name: Install Liquidsoap
   include_tasks: radio/liquidsoap.yml
 
-- name: Add Audiowaveform PPA
-  apt_repository:
-    repo: "ppa:chris-needham/ppa"
-    update_cache: true
-
-- name: Install Audiowaveform
-  apt:
-    name: audiowaveform
-    install_recommends: false
-
-- name: Install Flac
-  apt:
-    name: flac
-    install_recommends: false
-
-- name: Install Vorbis-Tools
-  apt:
-    name: vorbis-tools
-    install_recommends: false

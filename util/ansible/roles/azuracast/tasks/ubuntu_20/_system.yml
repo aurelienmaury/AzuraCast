@@ -1,0 +1,47 @@
+---
+- name: Remove unwanted system packages
+  apt:
+    name: "{{ azuracast_unwanted_packages }}"
+    state: absent
+    force: true
+    purge: true
+
+- name: Gather existing php version    # noqa: risky-shell-pipe
+  shell: >-
+    (php -v | head -n 1 | cut -d " " -f2) || echo 0.0.0
+  changed_when: false
+  register:
+    _php_current_version_sh
+
+- name: Cook variables
+  set_fact:
+    php_expected_version_found: "{{ _php_current_version_sh.stdout is match(azuracast_php_version + '.*') }}"
+
+- name: Remove unexpected php
+  apt:
+    name: "php*"
+    state: absent
+  when: not php_expected_version_found
+
+- name: Add external repository keys
+  apt_key:
+    url: "{{ _current_repo_key.url }}"
+    keyring: "{{ _current_repo_key.keyring }}"
+  loop: "{{ azuracast_external_repository_keys }}"
+  loop_control:
+    loop_var: _current_repo_key
+
+- name: Add required external repositories
+  apt_repository:
+    repo: "{{ _current_repo.repo }}"
+    filename: "{{ _current_repo.file | default(omit) }}"
+    update_cache: false
+  loop: "{{ azuracast_external_repositories }}"
+  loop_control:
+    loop_var: _current_repo
+
+- name: Install required system packages
+  apt:
+    name: "{{ azuracast_system_packages }}"
+    update_cache: true
+    install_recommends: false

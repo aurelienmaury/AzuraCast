@@ -1,21 +1,4 @@
 ---
-- name: Add nodejs repository key
-  apt_key:
-    url: "{{ azuracast_build_node_keyring_url }}"
-    keyring: "{{ azuracast_build_node_keyring_path }}"
-
-- name: Add nodejs repositories
-  apt_repository:
-    repo: "{{ _current_repo }}"
-  loop: "{{ azuracast_build_node_repositories }}"
-  loop_control:
-    loop_var: _current_repo
-
-- name: Install system dependencies
-  apt:
-    name: "{{ azuracast_build_system_packages }}"
-    update_cache: true
-
 - name: Set permissions for folders
   file:
     path: "{{ _current_directory }}"

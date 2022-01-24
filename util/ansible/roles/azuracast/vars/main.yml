@@ -1,5 +1,6 @@
 ---
 azuracast_env_marker: "{{ ansible_distribution }} {{ ansible_distribution_version }}"
+azuracast_app_env: "{{ app_env | default('production') }}"
 azuracast_supported_architecture:
   - i386
   - x86_64
@@ -19,9 +20,6 @@ azuracast_util_dir: "{{ azuracast_src_dir }}/util"
 ##
 # ***************** CRON *****************
 ##
-azuracast_cron_system_packages:
-  - cron
-  - tmpreaper
 azuracast_cron_jobs:
   - name: "azuracast_sync"
     user: "{{ azuracast_user }}"

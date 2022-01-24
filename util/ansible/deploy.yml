@@ -4,19 +4,14 @@
   gather_facts: false
 
   vars:
-    app_env: "production"
+    app_env: "{{ lookup('env', 'APP_ENV') | default('production', true) }}"
     update_mode: false
     dev_azuracast_user_password: "azuracast"
     dev_mysql_user_password: "azuracast"
-
-  environment:
-    DEBIAN_FRONTEND: noninteractive
 
   roles:
     - init
     - redis
     - nginx
-    - supervisord
-    - beanstalkd
     - mariadb
     - azuracast

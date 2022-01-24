@@ -1,9 +1,9 @@
 ---
-- name: Assign User Password
+- name: Cook mysql password
   set_fact:
     mysql_user_password: >-
       {{
-        (app_env == 'production')
+        (azuracast_app_env == 'production')
         | ternary(azuracast_mysql_password, dev_mysql_user_password)
       }}
 
@@ -34,7 +34,6 @@
     loop_var: _current_sql_cleanup_query
   changed_when: false
 
-# MySQL Secure Installation
 - name: Set up AzuraCast database user
   mysql_user:
     name: azuracast
@@ -43,7 +42,7 @@
     priv: "azuracast.*:ALL,GRANT"
     state: present
     login_unix_socket: "/run/mysqld/mysqld.sock"
-  notify: send mysql notification
+  notify: Send mysql notification
 
 - name: Add .my.cnf
   template:
@@ -78,16 +77,20 @@
     value: "{{ _current_db_install_env_ini.value }}"
     mode: 0644
   loop:
-    - option: 'MYSQL_HOST'
-      value: 'localhost'
-    - option: 'MYSQL_PORT'
-      value: '3306'
-    - option: 'MYSQL_USER'
-      value: 'azuracast'
-    - option: 'MYSQL_DB'
-      value: 'azuracast'
-    - option: 'MYSQL_PASSWORD'
+    - option: "MYSQL_HOST"
+      value: "localhost"
+
+    - option: "MYSQL_PORT"
+      value: "3306"
+
+    - option: "MYSQL_USER"
+      value: "azuracast"
+
+    - option: "MYSQL_DB"
+      value: "azuracast"
+
+    - option: "MYSQL_PASSWORD"
       value: "{{ mysql_user_password }}"
-  no_log: true
+  no_log: true    # not logging because of the password
   loop_control:
     loop_var: _current_db_install_env_ini

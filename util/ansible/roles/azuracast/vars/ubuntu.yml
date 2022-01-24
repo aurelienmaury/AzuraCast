@@ -15,22 +15,65 @@ azuracast_mysql_password: "{{ lookup('password', azuracast_mysql_password_file +
 azuracast_composer_options:
   development: ""
   production: "--no-dev --optimize-autoloader"
+
 azuracast_build_system_packages:
   - nodejs
+
+azuracast_system_packages: >-
+  {{
+    azuracast_base_system_packages
+    + azuracast_build_system_packages
+    + azuracast_liquidsoap_system_packages
+    + azuracast_php_sys_packages
+    + azuracast_waveform_system_packages
+  }}
+
+azuracast_base_system_packages:
+  - beanstalkd
+  - cron
+  - nginx
+  - nginx-common
+  - nginx-extras
+  - supervisor
+  - tmpreaper
+
+azuracast_unwanted_packages:
+  - apache2
+  - influxdb
+  - lighttpd
 
 azuracast_build_node_version: 16
 azuracast_build_node_repo: "https://deb.nodesource.com/node_{{ azuracast_build_node_version }}.x"
 azuracast_build_node_keyring_url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
 azuracast_build_node_keyring_path: "/usr/share/keyrings/nodesource.gpg"
-azuracast_build_node_repositories:
-  - "deb [signed-by={{ azuracast_build_node_keyring_path }}] {{ azuracast_build_node_repo }} {{ ansible_lsb.codename }} main"
-  - "deb-src [signed-by={{ azuracast_build_node_keyring_path }}] {{ azuracast_build_node_repo }} {{ ansible_lsb.codename }} main"
+
+azuracast_external_repository_keys:
+  - url: "{{ azuracast_build_node_keyring_url }}"
+    keyring: "{{ azuracast_build_node_keyring_path }}"
+
+azuracast_external_repositories:
+  - description: "azuracast radio dependencies"
+    repo: "ppa:chris-needham/ppa"
+
+  - description: "azuracast php dependencies"
+    repo: "ppa:ondrej/php"
+
+  - description: "Nodejs external"
+    repo: "deb [signed-by={{ azuracast_build_node_keyring_path }}] {{ azuracast_build_node_repo }} {{ ansible_lsb.codename }} main"
+    file: nodejs
+
+  - description: "Nodejs external src"
+    repo: "deb-src [signed-by={{ azuracast_build_node_keyring_path }}] {{ azuracast_build_node_repo }} {{ ansible_lsb.codename }} main"
+    file: nodejs
 
 azuracast_opam_switch_version: "4.12.0"
 azuracast_liquidsoap_system_packages:
+  - autoconf
+  - automake
+  - bubblewrap
   - ffmpeg
-  - opam
-  - ocaml
+  - frei0r-plugins-dev
+  - ladspa-sdk
   - libavcodec-dev
   - libavdevice-dev
   - libavfilter-dev
@@ -48,35 +91,37 @@ azuracast_liquidsoap_system_packages:
   - libpcre3-dev
   - libpostproc-dev
   - libsamplerate0-dev
+  - libssl-dev
   - libswresample-dev
   - libswscale-dev
-  - libssl-dev
   - libtag1-dev
   - libvorbis-dev
-  - autoconf
-  - automake
   - m4
-  - pkg-config
-  - unzip
-  - bubblewrap
-  - frei0r-plugins-dev
-  - ladspa-sdk
   - multimedia-audio-plugins
+  - ocaml
+  - opam
+  - pkg-config
   - swh-plugins
   - tap-plugins
+  - unzip
 
 azuracast_php_version: "8.1"
 azuracast_php_sys_packages:
-  - "php{{ azuracast_php_version }}-fpm"
+  - "php{{ azuracast_php_version }}-bcmath"      # BigInteger
   - "php{{ azuracast_php_version }}-cli"
-  - "php{{ azuracast_php_version }}-gd"
   - "php{{ azuracast_php_version }}-curl"
+  - "php{{ azuracast_php_version }}-fpm"
+  - "php{{ azuracast_php_version }}-gd"
+  - "php{{ azuracast_php_version }}-gmp"         # BigInteger and PHP-IP
+  - "php{{ azuracast_php_version }}-intl"        # Localization
+  - "php{{ azuracast_php_version }}-maxminddb"   # Maxmind (GeoIP) DB native ext
+  - "php{{ azuracast_php_version }}-mbstring"    # Codeception Tests
+  - "php{{ azuracast_php_version }}-mysqlnd"     # MySQL Native Driver (Doctrine)
+  - "php{{ azuracast_php_version }}-redis"       # Cache
   - "php{{ azuracast_php_version }}-xml"         # IceCast XML config
   - "php{{ azuracast_php_version }}-zip"         # Composer installs
-  - "php{{ azuracast_php_version }}-mysqlnd"     # MySQL Native Driver (Doctrine)
-  - "php{{ azuracast_php_version }}-mbstring"    # Codeception Tests
-  - "php{{ azuracast_php_version }}-intl"        # Localization
-  - "php{{ azuracast_php_version }}-redis"       # Cache
-  - "php{{ azuracast_php_version }}-bcmath"      # BigInteger
-  - "php{{ azuracast_php_version }}-gmp"         # BigInteger and PHP-IP
-  - "php{{ azuracast_php_version }}-maxminddb"   # Maxmind (GeoIP) DB native ext
+
+azuracast_waveform_system_packages:
+  - audiowaveform
+  - flac
+  - vorbis-tools

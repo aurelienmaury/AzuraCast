@@ -1,8 +1,4 @@
 ---
-- name: Install cron system dependencies
-  apt:
-    name: "{{ azuracast_cron_system_packages }}"
-
 - name: Install azuracast cron jobs
   cron:
     name: "{{ _current_cron.name }}"

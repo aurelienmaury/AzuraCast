@@ -16,7 +16,7 @@ http {
     # Basic Settings
     ##
 
-    sendfile on;
+    sendfile {{ (nginx_app_env == 'production')| ternary('on', 'off') }};
     tcp_nopush on;
     tcp_nodelay on;
 

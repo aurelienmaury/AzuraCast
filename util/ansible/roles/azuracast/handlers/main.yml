@@ -1,17 +1,23 @@
 ---
-- name: restart cron
+- name: Restart beanstalkd
   service:
-    name: cron
+    name: beanstalkd
     enabled: true
     state: restarted
 
-- name: send user notification
+- name: Restart supervisor
+  service:
+    name: supervisord
+    enabled: true
+    state: restarted
+
+- name: Send user notification
   debug:
     msg: >-
       A user account named 'azuracast' has been created. The password value is
       in the file: {{ azuracast_user_password_file }}
 
-- name: send mysql notification
+- name: Send mysql notification
   debug:
     msg: >-
       The MySQL 'azuracast'@'localhost' account has been created. The password value is

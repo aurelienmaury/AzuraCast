@@ -1,4 +1,9 @@
 ---
+- import_tasks: _system.yml
+
+
+- import_tasks: _beanstalkd.yml
+
 - import_tasks: _user.yml
 
 - import_tasks: _php.yml
