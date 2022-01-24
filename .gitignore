@@ -52,6 +52,7 @@ tmp/cache/*---*
 
 # Ansible deployment files
 /ansible/
+requirements.dev.txt
 /util/ansible/deploy.retry
 /util/ansible/update.retry
 /tests/_output/*
