@@ -1,12 +1,12 @@
 ---
-- name: Configure beanstalkd defaults
+- name: (_beanstalkd) Configure beanstalkd defaults
   template:
     src: beanstalkd.default.j2
     dest: /etc/default/beanstalkd
     mode: 0644
   notify: Restart beanstalkd
 
-- name: Enable beanstalkd
+- name: (_beanstalkd) Enable beanstalkd
   service:
     name: beanstalkd
     enabled: true

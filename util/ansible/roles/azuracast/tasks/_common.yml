@@ -12,5 +12,3 @@
     path: "/etc/ansible/facts.d"
     state: directory
     mode: 0755
-
-

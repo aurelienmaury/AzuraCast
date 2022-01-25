@@ -1,7 +1,43 @@
 ---
-- name: Build Icecast
-  include_tasks: radio/icecast.yml
+- name: (_radio) Download IceCast-KH-AC Source
+  get_url:
+    url: https://github.com/AzuraCast/icecast-kh-ac/archive/2.4.0-kh13-ac2.tar.gz
+    dest: "{{ app_base }}/servers/icecast2/icecast2.tar.gz"
+    force: true
 
-- name: Install Liquidsoap
-  include_tasks: radio/liquidsoap.yml
+- name: (_radio) Extract IceCast-KH-AC Source
+  unarchive:
+    src: "{{ app_base }}/servers/icecast2/icecast2.tar.gz"
+    dest: "{{ app_base }}/servers/icecast2"
+    remote_src: true
+    mode: "u=rwx,g=rx,o=rx"
+    owner: "azuracast"
+    group: "www-data"
+    extra_opts: "--strip-components=1"
 
+- name: (_radio) Build IceCast-KH-AC
+  shell: "cd {{ app_base }}/servers/icecast2 && ./configure && make && make install"
+  args:
+    chdir: "{{ app_base }}/servers/icecast2"
+
+- name: (_radio) Clear OPAM directory
+  file:
+    path: "{{ app_base }}/.opam"
+    state: absent
+
+- name: (_radio) Get the DPKG Architecture
+  command: >-
+    dpkg --print-architecture
+  register: dpkg_arch
+  changed_when: false
+
+- name: (_radio) Install Liquidsoap
+  apt:
+    deb: "https://github.com/savonet/liquidsoap/releases/download/v2.0.2/liquidsoap_2.0.2-ubuntu-focal-1_{{ dpkg_arch.stdout_lines[0] | default('amd64') }}.deb"
+
+- name: (_radio) Link Liquidsoap binary
+  file:
+    src: "/usr/bin/liquidsoap"
+    dest: /usr/local/bin/liquidsoap
+    state: link
+    force: true

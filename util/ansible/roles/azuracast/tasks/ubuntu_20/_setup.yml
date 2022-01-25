@@ -1,5 +1,5 @@
 ---
-- name: Make update scripts executable
+- name: (_setup) Make update scripts executable
   file:
     path: "{{ _current_update_script }}"
     state: file
@@ -10,7 +10,7 @@
   loop_control:
     loop_var: _current_update_script
 
-- name: Setup database schema
+- name: (_setup) Setup database schema
   become: true
   become_user: "{{ azuracast_user }}"
   command: >-
@@ -20,13 +20,13 @@
     not (ansible_local.azuracast_setup_done | default(false))
     or (force_update | default(false))
 
-- name: Mark system as setup done
+- name: (_setup) Mark system as setup done
   copy:
     dest: /etc/ansible/facts.d/azuracast_setup_done.fact
     content: "True"
     mode: 0644
 
-- name: UPDATE - Migrate legacy configuration
+- name: (_setup) Migrate legacy configuration
   become: true
   become_user: "{{ azuracast_user }}"
   command: >-
@@ -34,7 +34,7 @@
   when:
     - force_update | default(update_mode|bool) | default(false)
 
-- name: UPDATE - Database schema
+- name: (_setup) Database schema
   become: true
   become_user: "{{ azuracast_user }}"
   command: >-

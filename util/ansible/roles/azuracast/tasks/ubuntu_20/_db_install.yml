@@ -1,5 +1,11 @@
 ---
-- name: Cook mysql password
+- name: (_db_install) Enable mariadb
+  service:
+    name: mysql
+    state: started
+    enabled: true
+
+- name: (_db_install) Cook mysql password
   set_fact:
     mysql_user_password: >-
       {{
@@ -7,7 +13,7 @@
         | ternary(azuracast_mysql_password, dev_mysql_user_password)
       }}
 
-- name: Add configuration
+- name: (_db_install) Add configuration
   template:
     src: db_install/my.cnf.j2
     dest: /etc/mysql/conf.d/my.cnf
@@ -15,7 +21,7 @@
     group: root
     mode: 0644
 
-- name: Add empty root .my.cnf (if none exists)
+- name: (_db_install) Add empty root .my.cnf (if none exists)
   template:
     src: db_install/root_empty_my.cnf.j2
     dest: /root/.my.cnf
@@ -24,7 +30,7 @@
     mode: 0600
     force: false
 
-- name: MariaDB Cleanup
+- name: (_db_install) MariaDB Cleanup
   command: >-
     mysql --defaults-extra-file=/root/.my.cnf -ne "{{ _current_sql_cleanup_query }}"
   loop:
@@ -34,7 +40,7 @@
     loop_var: _current_sql_cleanup_query
   changed_when: false
 
-- name: Set up AzuraCast database user
+- name: (_db_install) Set up AzuraCast database user
   mysql_user:
     name: azuracast
     host: "localhost"
@@ -44,7 +50,7 @@
     login_unix_socket: "/run/mysqld/mysqld.sock"
   notify: Send mysql notification
 
-- name: Add .my.cnf
+- name: (_db_install) Add .my.cnf
   template:
     src: db_install/user_my.cnf.j2
     dest: "{{ app_base }}/.my.cnf"
@@ -53,13 +59,13 @@
     mode: 0644
     force: true
 
-- name: Reload privilege tables
+- name: (_db_install) Reload privilege tables
   command: >-
     mysql --defaults-extra-file=/root/.my.cnf -ne "FLUSH PRIVILEGES"
   changed_when: false
 
 # Create Database
-- name: Create MySQL Database
+- name: (_db_install) Create MySQL Database
   community.mysql.mysql_db:
     config_file: "/root/.my.cnf"
     name: azuracast
@@ -69,7 +75,7 @@
     login_unix_socket: "/run/mysqld/mysqld.sock"
   register: azuracast_db_created
 
-- name: Set up environment file
+- name: (_db_install) Set up environment file
   ini_file:
     dest: "{{ www_base }}/env.ini"
     section: "configuration"
@@ -91,6 +97,7 @@
 
     - option: "MYSQL_PASSWORD"
       value: "{{ mysql_user_password }}"
-  no_log: true    # not logging because of the password
+  no_log: true
   loop_control:
+    label: "{{ _current_db_install_env_ini.option }}"
     loop_var: _current_db_install_env_ini

@@ -1,5 +1,5 @@
 ---
-- name: Download dbip database
+- name: (_dbip) Download dbip database
   get_url:
     url: >-
       https://download.db-ip.com/free/dbip-city-lite-{{ ansible_date_time.year }}-{{ ansible_date_time.month }}.mmdb.gz
@@ -10,7 +10,7 @@
     group: "{{ azuracast_www_group }}"
   register: _dbip_get_url
 
-- name: Extract dbip database    # noqa: no-handler
+- name: (_dbip) Extract dbip database    # noqa: no-handler
   become_user: "{{ azuracast_user }}"
   command: >-
     gunzip -kf dbip-city-lite.mmdb.gz

@@ -1,19 +1,19 @@
 ---
-- name: Install UFW Firewall
+- name: (_ufw) Install UFW Firewall
   apt:
     name: ufw
 
-- name: UFW - Disable all other incoming by default
+- name: (_ufw) Disable all other incoming by default
   ufw:
     policy: deny
     direction: incoming
 
-- name: UFW - Allow all other outgoing by default
+- name: (_ufw) Allow all other outgoing by default
   ufw:
     policy: allow
     direction: outgoing
 
-- name: UFW - Enable AzuraCast TCP Ports
+- name: (_ufw) Enable AzuraCast TCP Ports
   ufw:
     rule: allow
     port: "{{ _current_allow_rule }}"
@@ -25,12 +25,12 @@
   loop_control:
     loop_var: _current_allow_rule
 
-- name: UFW - Enable SSH
+- name: (_ufw) Enable SSH
   ufw:
     rule: limit
     port: ssh
     proto: tcp
 
-- name: UFW - Turn on Firewall
+- name: (_ufw) Turn on Firewall
   ufw:
     state: enabled

@@ -3,16 +3,8 @@ init_supported_architecture:
   - i386
   - x86_64
 init_supported_os:
-  - distribution_release: "bionic"
-    version: "18.04"
   - distribution_release: "focal"
     version: "20.04"
-
-init_apt_repositories:
-  - "deb http://archive.ubuntu.com/ubuntu {{ ansible_distribution_release }} multiverse"
-  - "deb-src http://archive.ubuntu.com/ubuntu/ {{ ansible_distribution_release }} multiverse"
-  - "deb http://archive.ubuntu.com/ubuntu {{ ansible_distribution_release }}-updates multiverse"
-  - "deb-src http://archive.ubuntu.com/ubuntu/ {{ ansible_distribution_release }}-updates multiverse"
 
 init_system_packages:
   - apt-transport-https

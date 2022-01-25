@@ -1,5 +1,5 @@
 ---
-- name: Install azuracast cron jobs
+- name: (_cron) Install azuracast cron jobs
   cron:
     name: "{{ _current_cron.name }}"
     job: "{{ _current_cron.job }}"

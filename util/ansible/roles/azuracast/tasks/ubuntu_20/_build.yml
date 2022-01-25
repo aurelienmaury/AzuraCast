@@ -1,5 +1,5 @@
 ---
-- name: Set permissions for folders
+- name: (_build) Set permissions for folders
   file:
     path: "{{ _current_directory }}"
     state: directory
@@ -10,9 +10,9 @@
   loop_control:
     loop_var: _current_directory
 
-- name: Install node dependencies
+- name: (_build) Install node dependencies
   block:
-    - name: Pull Node Dependencies
+    - name: (_build) Pull Node Dependencies
       become: true
       become_user: "{{ azuracast_user }}"
       command: >-
@@ -20,7 +20,7 @@
       args:
         chdir: "{{ azuracast_src_dir }}/frontend"
 
-    - name: Build AzuraCast Frontend Scripts
+    - name: (_build) Build AzuraCast Frontend Scripts
       become: true
       become_user: "{{ azuracast_user }}"
       command: >-
@@ -28,7 +28,7 @@
       args:
         chdir: "{{ azuracast_src_dir }}/frontend"
 
-    - name: Set permissions of generated frontend content
+    - name: (_build) Set permissions of generated frontend content
       command: >-
         {{ _current_perm_command }}
       loop:
@@ -38,7 +38,7 @@
       loop_control:
         loop_var: _current_perm_command
 
-    - name: Mark nodejs setup done
+    - name: (_build) Mark nodejs setup done
       copy:
         dest: /etc/ansible/facts.d/azuracast_nodejs_done.fact
         content: "True"

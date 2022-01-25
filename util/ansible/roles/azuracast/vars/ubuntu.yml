@@ -22,20 +22,32 @@ azuracast_build_system_packages:
 azuracast_system_packages: >-
   {{
     azuracast_base_system_packages
+    + azuracast_icecast_system_packages
     + azuracast_build_system_packages
     + azuracast_liquidsoap_system_packages
     + azuracast_php_sys_packages
     + azuracast_waveform_system_packages
   }}
 
+azuracast_icecast_system_packages:
+  - libssl-dev
+  - libvorbis-dev
+  - libxml2
+  - libxslt1-dev
+  - pkg-config
+# - libcurl4-openssl-dev   # conflicts with libcurl4-gnutls-dev which superseeds this one
+
 azuracast_base_system_packages:
   - beanstalkd
   - cron
+  - mariadb-client
+  - mariadb-server
   - nginx
   - nginx-common
   - nginx-extras
   - supervisor
   - tmpreaper
+
 
 azuracast_unwanted_packages:
   - apache2
@@ -51,6 +63,9 @@ azuracast_external_repository_keys:
   - url: "{{ azuracast_build_node_keyring_url }}"
     keyring: "{{ azuracast_build_node_keyring_path }}"
 
+  - url: "https://supplychain.mariadb.com/mariadb-keyring-2019.gpg"
+    keyring: "/etc/apt/trusted.gpg.d/mariadb-keyring-2019.gpg"
+
 azuracast_external_repositories:
   - description: "azuracast radio dependencies"
     repo: "ppa:chris-needham/ppa"
@@ -58,13 +73,25 @@ azuracast_external_repositories:
   - description: "azuracast php dependencies"
     repo: "ppa:ondrej/php"
 
-  - description: "Nodejs external"
+  - description: "Nodejs"
     repo: "deb [signed-by={{ azuracast_build_node_keyring_path }}] {{ azuracast_build_node_repo }} {{ ansible_lsb.codename }} main"
     file: nodejs
 
-  - description: "Nodejs external src"
+  - description: "Nodejs src"
     repo: "deb-src [signed-by={{ azuracast_build_node_keyring_path }}] {{ azuracast_build_node_repo }} {{ ansible_lsb.codename }} main"
     file: nodejs
+
+  - description: "Mariadb"
+    repo: "deb [arch=amd64,arm64] https://downloads.mariadb.com/MariaDB/mariadb-10.5/repo/ubuntu {{ ansible_lsb.codename }} main"
+    file: mariadb
+
+  - description: "Mariadb debug"
+    repo: "deb [arch=amd64,arm64] https://downloads.mariadb.com/MariaDB/mariadb-10.5/repo/ubuntu {{ ansible_lsb.codename }} main/debug"
+    file: mariadb
+
+  - description: "Mariadb tools"
+    repo: "deb [arch=amd64] http://downloads.mariadb.com/Tools/ubuntu {{ ansible_lsb.codename }} main"
+    file: mariadb
 
 azuracast_opam_switch_version: "4.12.0"
 azuracast_liquidsoap_system_packages:

@@ -1,5 +1,5 @@
 ---
-- name: Change supervisord configuration
+- name: (_supervisor) Change supervisord configuration
   template:
     src: supervisord.conf.j2
     dest: /etc/supervisor/supervisord.conf
@@ -7,13 +7,13 @@
     mode: 0644
   notify: Restart supervisor
 
-- name: Remove old core supervisord configuration
+- name: (_supervisor) Remove old core supervisord configuration
   file:
     path: /etc/supervisor/conf.d/core.conf
     state: absent
   notify: Restart supervisor
 
-- name: Enable supervisor
+- name: (_supervisor) Enable supervisor
   service:
     name: supervisor
     enabled: true

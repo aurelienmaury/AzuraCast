@@ -15,14 +15,6 @@
   loop_control:
     loop_var: _current_distribution_vars
 
-- name: Add expected repositories
-  apt_repository:
-    repo: "{{ _current_repo }}"
-    update_cache: false
-  loop: "{{ init_apt_repositories }}"
-  loop_control:
-    loop_var: _current_repo
-
 - name: Install system packages
   apt:
     update_cache: true

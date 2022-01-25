@@ -1,40 +1,40 @@
 ---
-- name: Write environment configuration file
+- name: (_config) Write environment configuration file
   template:
     src: config/env.ini.j2
     dest: "{{ www_base }}/env.ini"
-    owner: azuracast
-    group: www-data
+    owner: "{{ azuracast_user }}"
+    group: "{{ azuracast_www_group }}"
     mode: 0644
     force: false
 
-- name: Set up environment file
+- name: (_config) Set up environment file
   ini_file:
     dest: "{{ www_base }}/env.ini"
     section: "configuration"
     option: "application_env"
-    value: "{{ app_env }}"
+    value: "{{ azuracast_app_env }}"
     mode: 0644
 
-- name: Set Permissions on Base App Folder
+- name: (_config) Set Permissions on Base App Folder
   file:
     path: "{{ app_base }}"
     state: directory
-    owner: azuracast
-    group: www-data
+    owner: "{{ azuracast_user }}"
+    group: "{{ azuracast_www_group }}"
     mode: 0775
 
-- name: Clear temp directory
+- name: (_config) Clear temp directory
   file:
     path: "{{ tmp_base }}"
     state: absent
 
-- name: Create System Folders
+- name: (_config) Create System Folders
   file:
-    path: "{{ azuracast_config_sys_directory }}"
+    path: "{{ _current_directory }}"
     state: directory
-    owner: azuracast
-    group: www-data
+    owner: "{{ azuracast_user }}"
+    group: "{{ azuracast_www_group }}"
     mode: 0775
   loop:
     - "{{ tmp_base }}"
@@ -48,4 +48,4 @@
     - "{{ app_base }}/servers/icecast2"
     - "{{ app_base }}/uploads"
   loop_control:
-    loop_var: azuracast_config_sys_directory
+    loop_var: _current_directory

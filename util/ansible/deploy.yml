@@ -13,5 +13,4 @@
     - init
     - redis
     - nginx
-    - mariadb
     - azuracast
