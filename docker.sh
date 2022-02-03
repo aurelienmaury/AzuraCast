@@ -520,7 +520,8 @@ update() {
       rm docker.new.sh
     fi
 
-    if ! docker-compose config; then
+    local dc_config_test=$(docker-compose config)
+    if [ $? -ne 0 ]; then
       if ask "Docker Compose needs to be updated to continue. Update to latest version?" Y; then
         install-docker-compose
       fi
@@ -802,5 +803,8 @@ change-ports() {
   docker-compose down
   docker-compose up -d
 }
+
+# Ensure we're in the same directory as this script.
+cd "${BASH_SOURCE%/*}/" || exit
 
 "$@"
